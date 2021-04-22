@@ -9,12 +9,12 @@ output_str = "{number_user} = {second_need_number}V"
 maxV = 3.3
 try:
     out_list = (26, 19, 13, 6, 5, 11, 9, 10)
-    in_chan = 4
-    V_chan = 17
+    in_chan_number = 4
+    V_chan_number = 17
     GPIO.setmode (GPIO.BCM)
     GPIO.setup (out_list, GPIO.OUT)
-    GPIO.setup (V_chan, GPIO.OUT)
-    GPIO.setup (in_chan, GPIO.IN)
+    GPIO.setup (V_chan_number, GPIO.OUT)
+    GPIO.setup (in_chan_number, GPIO.IN)
 except:
     print ("Ошибка инициализации чего-то")
     raise SystemExit
@@ -30,7 +30,7 @@ def num2dac (value):
     GPIO.output (out_list, tuple (bin_number))
  
 try:
-    GPIO.output (V_chan, 1)
+    GPIO.output (V_chan_number, 1)
     while True:
         try:
             value = int(input ("Введите число (-1 для выхода): "))
