@@ -1,0 +1,53 @@
+try:
+    import RPi.GPIO as GPIO
+    import time
+except ImportError:
+    print ("Ошибака импорта")
+    raise SystemExit
+ 
+output_str = "{number_user} = {second_need_number}V"
+maxV = 3.3
+try:
+    out_list = (26, 19, 13, 6, 5, 11, 9, 10)
+    in_chan = 4
+    V_chan = 17
+    GPIO.setmode (GPIO.BCM)
+    GPIO.setup (out_list, GPIO.OUT)
+    GPIO.setup (V_chan, GPIO.OUT)
+    GPIO.setup (in_chan, GPIO.IN)
+except:
+    print ("Ошибка инициализации чего-то")
+    raise SystemExit
+ 
+ 
+def decToBinList (dec_number):
+    if dec_number < 0 or dec_number > 255:
+        raise ValueError
+    return [(dec_number & (1 << i)) >> i for i in range (7, -1, -1)]
+ 
+def num2dac (value):
+    bin_number = decToBinList (value)
+    GPIO.output (out_list, tuple (bin_number))
+ 
+try:
+    GPIO.output (V_chan, 1)
+    while True:
+        try:
+            value = int(input ("Введите число (-1 для выхода): "))
+            if value < -1 or value > 255:
+                print ("Число должно быть от 0 до 255 (или -1 для выхода). Попробуйте еще раз.")
+                continue
+        except ValueError:
+            print ("Необходимо ввести число! Попробуйте еще раз:")
+        else:
+            if value == -1:
+                break
+            for_output = maxV * value / 255.0
+            print (output_str.format(number_user = value, second_need_number = for_output))
+            num2dac(int(value * 50 / 255))
+finally:
+    GPIO.output (out_list, 0)
+    GPIO.output (V_chan, 0)
+    GPIO.cleanup (out_list)
+    GPIO.cleanup (V_chan)
+    GPIO.cleanup (in_chan)
